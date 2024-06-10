@@ -27,16 +27,16 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
-    'prettier/prettier': [
-      'warn',
-      {
-        singleQuote: true,
-        semi: false,
-        printWidth: 100,
-        trailingComma: 'all',
-        endOfLine: 'auto',
-      },
-    ],
+    // 'prettier/prettier': [
+    //   'warn',
+    //   {
+    //     singleQuote: true,
+    //     semi: false,
+    //     printWidth: 100,
+    //     trailingComma: 'all',
+    //     endOfLine: 'auto',
+    //   },
+    // ],
     'vue/multi-word-component-names': ['off'],
     'vue/no-setup-props-destructure': ['off'],
     'vue/no-deprecated-html-element-is': ['off'],
