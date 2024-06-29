@@ -1,52 +1,79 @@
 <template>
   <section class="login-section">
     <div class="content">
-      <div class="title">Welcome to</div>
+      <div class="title">欢迎来到</div>
       <div class="title">Gemini Chat</div>
     </div>
     <div class="login-form">
-      <h2 class="text-center py-6">Login</h2>
-      <el-form class="form-box" :model="form" label-width="auto">
-        <el-form-item label="Email">
-          <el-input v-model="form.email" type="email" />
-        </el-form-item>
-        <el-form-item label="Password">
-          <el-input v-model="form.password" type="password" show-password />
-        </el-form-item>
-        <el-form-item>
-          <el-checkbox v-model="form.remember">Remember me</el-checkbox>
-          <el-link type="primary" href="#" class="forgot-password"> Forgot Password? </el-link>
-        </el-form-item>
-        <!-- <el-form-item> -->
-        <el-button type="primary" class="login-btn" @click="onSubmit">Login</el-button>
-        <!-- </el-form-item> -->
-        <el-form-item label-position="top">
-          <div class="register">
-            Don't have an account? <el-link type="primary" href="#">Register</el-link>
-          </div>
-        </el-form-item>
-      </el-form>
-      <div class="login-with">
-        <div class="or">OR</div>
-        <el-button type="primary" class="google" icon="el-icon-google">
-          Login with Google
-        </el-button>
+      <div class="login-box">
+        <h2 class="text-center py-6">登录</h2>
+        <el-form class="form-box" :rules="rules" ref="formRef" :model="form" label-width="auto">
+          <el-form-item label="邮箱">
+            <el-input v-model="form.email" type="email" />
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="form.password" type="password" show-password />
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox v-model="form.remember">记住我</el-checkbox>
+            <el-link type="primary" href="#" class="forgot-password">忘记密码？</el-link>
+          </el-form-item>
+          <el-button type="primary" class="login-btn" @click="onSubmit(formRef)">登录</el-button>
+          <el-form-item label-position="top">
+            <div class="register">没有账户？<el-link type="primary" href="#">注册</el-link></div>
+          </el-form-item>
+        </el-form>
+        <div class="login-with">
+          <div class="or">或</div>
+          <el-button type="primary" class="google" icon="el-icon-google">
+            使用 Google 登录
+          </el-button>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { reactive, ref } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import router from '@/router'
 
-const form = reactive({
+interface RuleForm {
+  email: string
+  password: string
+  remember: boolean
+}
+
+const form = reactive<RuleForm>({
   email: '',
   password: '',
   remember: false,
 })
 
-const onSubmit = () => {
-  console.log('submit!')
+const rules = reactive<FormRules<RuleForm>>({
+  email: [
+    { required: true, message: '请填写邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' },
+  ],
+  password: [{ required: true, message: '请填写密码', trigger: 'blur' }],
+})
+
+const formRef = ref<FormInstance>()
+
+const onSubmit = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      const data = await useUserStore().getUserInfo({ email: form.email, password: form.password })
+      ElMessage({ type: 'success', message: '登录成功' })
+      // router.replace('/')
+      console.log('提交成功！', data)
+    } else {
+      console.log('提交失败！', fields)
+    }
+  })
 }
 </script>
 
@@ -66,6 +93,13 @@ const onSubmit = () => {
   }
 
   .login-form {
+    .login-box {
+      padding-top: 5rem;
+    }
+    .el-form {
+      width: 80%;
+      margin: auto;
+    }
     flex: 1;
     width: 100%;
     min-width: 31.25rem;
@@ -76,14 +110,14 @@ const onSubmit = () => {
     h2 {
       font-size: 2rem;
       font-weight: bold;
-      color: $gmiColor;
+      color: #409eff;
     }
   }
 
   .title {
     font-size: 3rem;
     font-weight: bold;
-    color: $gmiColor;
+    color: #409eff;
   }
 
   .login-with {
@@ -93,12 +127,7 @@ const onSubmit = () => {
     margin-bottom: 2rem;
 
     .google {
-      background-color: $helpColor;
-      color: #fff;
-    }
-
-    .facebook {
-      background-color: $priceColor;
+      background-color: #db4437;
       color: #fff;
     }
   }
@@ -121,6 +150,7 @@ const onSubmit = () => {
     color: #606266;
     margin-top: 1rem;
   }
+
   .login-btn {
     width: 60%;
     margin: auto;

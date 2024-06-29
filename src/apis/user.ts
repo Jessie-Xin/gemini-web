@@ -1,9 +1,9 @@
 import httpInstance from '@/utils/https'
 //登录接口
-export const login = (data: { email: string; password: string }) => {
-  return httpInstance.post('login', data)
+export const login = (data: LoginTypes.LoginParams) => {
+  return httpInstance.post<LoginTypes.LoginResult>('auth/signin', data)
 }
 //注册接口
-export const register = (data: { name: string; email: string; password: string }) => {
-  return httpInstance.post('register', data)
+export const register = (data: LoginTypes.RegisterParams) => {
+  return httpInstance.post<LoginTypes.LoginResult>('register', data)
 }
